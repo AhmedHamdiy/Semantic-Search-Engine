@@ -2,29 +2,6 @@
 
 A vector similarity search engine that uses an Inverted File Index (IVF) to do approximate nearest-neighbor lookups over high-dimensional embeddings. It's built to handle databases in the 1M to 20M vector range, with everything stored on disk as memory-mapped binary files.
 
-## How it works
-
-1. Vectors are loaded from disk via `numpy.memmap` so we don't have to hold everything in RAM at once.
-2. At index time, vectors are clustered into groups using MiniBatchKMeans (from scikit-learn). The centroids and cluster assignments get saved to disk.
-3. At query time, the engine finds the closest cluster centroids to the query vector, scans the vectors in those clusters in batches, and returns the top-K closest matches using cosine similarity.
-
-The number of clusters (`nlist`) and how many clusters to probe (`nprobe`) scale with the database size — see `params.py` for the exact values.
-
-## Project structure
-
-```
-├── vec_db.py          Core VecDB class — insertion, retrieval, index building
-├── ivf.py             IVF implementation (KMeans training + cluster assignment)
-├── disk.py            DiskIndex — reads/writes centroids and cluster ID files
-├── params.py          Configuration constants (dimensions, IVF params, paths)
-├── main.py            Entry point / quick demo
-├── data/
-│   └── Generate_Vector_Emembeddings.ipynb   Colab notebook for generating embeddings
-├── eval/
-│   ├── simple_eval.py     Local eval against brute-force cosine similarity
-│   └── final_eval.ipynb   Official evaluation notebook (Colab)
-└── docs/              Design docs, reports, and reference papers
-```
 
 ## Setup
 
@@ -40,7 +17,6 @@ uv sync
 
 ```bash
 pip install -r requirements.txt
-pip install scikit-learn   # needed by ivf.py but not in requirements.txt
 ```
 
 For generating embeddings, you'll also need `sentence-transformers` and `torch` (see the notebook in `data/`).
